@@ -1,11 +1,13 @@
 import customtkinter as ctk
+
 from screens.menu import MenuScreen
 from screens.settings import SettingsScreen
 from screens.game import GameScreen
 
 class App(ctk.CTk):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, config, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.config = config
         self.title("AI-Powered Tic Tac Toe")
         self.geometry("400x600")
 
@@ -20,9 +22,12 @@ class App(ctk.CTk):
         self.pages = {}
         for Page in (MenuScreen, SettingsScreen, GameScreen):
             page_name = Page.__name__
-            frame = Page(parent=self.container, controller=self)
+            if Page in (SettingsScreen, GameScreen):
+                frame = Page(parent=self.container, controller=self, config=self.config)
+            else:
+                frame = Page(parent=self.container, controller=self)
             self.pages[page_name] = frame
-            frame.grid(row=0, column=0, sticky="nsew")  # Stack all pages on top of each other
+            frame.grid(row=0, column=0, sticky="nsew") # Stack all pages on top of each other
 
         self.show_page("MenuScreen")
 
